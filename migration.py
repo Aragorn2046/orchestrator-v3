@@ -37,10 +37,7 @@ from task_graph import TaskGraph, TaskNode
 
 logger = logging.getLogger(__name__)
 
-ORCHESTRATED_ROOT = Path(os.environ.get(
-    "ORCHESTRATED_ROOT",
-    str(Path.home() / "projects" / "_orchestrated"),
-))
+ORCHESTRATED_ROOT = Path.home() / "projects" / "_orchestrated"
 
 
 # ---------------------------------------------------------------------------
@@ -48,11 +45,11 @@ ORCHESTRATED_ROOT = Path(os.environ.get(
 # ---------------------------------------------------------------------------
 
 CEO_BEHAVIORAL_RULES = [
-    "Never execute work directly",
-    "Always route through heads",
-    "Manage dependencies",
-    "Synthesize results",
-    "Budget oversight",
+    "Never execute delegated work directly",
+    "Always route through heads, never spawn specialists directly",
+    "Manage dependencies via task graph",
+    "Synthesize results as the integration point",
+    "Budget oversight before each delegation",
 ]
 
 ORCHESTRATE_SUBCOMMANDS = [
@@ -65,8 +62,25 @@ ORCHESTRATE_SUBCOMMANDS = [
 
 
 def is_orchestrate_mode() -> bool:
-    """Check whether CEO orchestrate mode is active."""
-    return os.environ.get("ORCHESTRATE_MODE", "") == "1"
+    """Check whether CEO orchestrate mode is active.
+
+    Default-on for main sessions. Opt-out via ORCHESTRATE_MODE=0.
+    Workers (spinoff, cron, specialist, agent sessions) are never CEO.
+
+    Priority order:
+    1. ORCHESTRATE_MODE=0 -> False (explicit opt-out)
+    2. ORCHESTRATOR_AGENT_ID set -> False (worker session)
+    3. CLAUDE_SESSION_TYPE is 'main' or unset -> True; else False
+    """
+    # Explicit opt-out
+    if os.environ.get("ORCHESTRATE_MODE") == "0":
+        return False
+    # Worker sessions identified by agent ID
+    if os.environ.get("ORCHESTRATOR_AGENT_ID"):
+        return False
+    # Session type check: main or unset = CEO, anything else = worker
+    session_type = os.environ.get("CLAUDE_SESSION_TYPE", "main")
+    return session_type == "main"
 
 
 def validate_ceo_protocol(delegate_md: str) -> Tuple[bool, List[str]]:
@@ -148,6 +162,12 @@ After collecting results from heads:
 3. Flag any gaps or partial failures
 4. Present budget summary
 
+## Auto-Activation
+
+This protocol activates automatically in every main Claude Code session.
+The CEO rules file and SessionStart hook handle activation — no manual
+command is needed. Opt out with ORCHESTRATE_MODE=0.
+
 ## Usage
 
 ```
@@ -166,7 +186,8 @@ def generate_orchestrate_md() -> str:
 ## Overview
 
 Submit multiple tasks, manage the agent hierarchy, and track progress.
-When invoked, sets ORCHESTRATE_MODE=1 to activate the CEO protocol.
+The CEO protocol is active by default in main sessions. Use these
+subcommands to manage delegated tasks and the agent hierarchy.
 
 ## Subcommands
 
@@ -249,9 +270,8 @@ def check_flat_delegate_works(
     This is a basic structural check — not a full functional test.
     """
     if orchestrator_sh is None:
-        orchestrator_sh = os.environ.get(
-            "ORCHESTRATOR_SH",
-            os.path.join(os.path.dirname(__file__), "orchestrator.sh"),
+        orchestrator_sh = os.path.expanduser(
+            "~/scripts/orchestrator/orchestrator.sh"
         )
     return os.path.isfile(orchestrator_sh) and os.access(
         orchestrator_sh, os.X_OK
@@ -276,11 +296,11 @@ class MigrationCoordinator:
         roles_dir: Optional[str] = None,
     ):
         self.root = Path(orchestrated_root or ORCHESTRATED_ROOT)
-        self.registry_dir = registry_dir or os.path.join(
-            os.path.dirname(__file__), "registry"
+        self.registry_dir = registry_dir or os.path.expanduser(
+            "~/scripts/orchestrator/registry"
         )
-        self.roles_dir = roles_dir or os.path.join(
-            os.path.dirname(__file__), "roles"
+        self.roles_dir = roles_dir or os.path.expanduser(
+            "~/scripts/orchestrator/roles"
         )
         self.events_path = str(self.root / "events.jsonl")
         self.task_graph_path = str(self.root / "task-graph.json")
@@ -544,8 +564,8 @@ class MigrationCoordinator:
         Returns a report dict with pass/fail for each check.
         """
         if task_router_path is None:
-            task_router_path = os.path.join(
-                os.path.dirname(__file__), "task-router.py"
+            task_router_path = os.path.expanduser(
+                "~/scripts/orchestrator/task-router.py"
             )
         report = {"checks": [], "passed": True}
 
@@ -565,13 +585,15 @@ class MigrationCoordinator:
             "detail": "orchestrator.sh should exist and be executable",
         })
 
-        # Check 3: CEO protocol is mode-scoped (not always active)
-        with_mode = os.environ.get("ORCHESTRATE_MODE")
+        # Check 3: CEO protocol respects session type boundaries
+        session_type = os.environ.get("CLAUDE_SESSION_TYPE", "main")
         ceo_active = is_orchestrate_mode()
         report["checks"].append({
             "check": "ceo_mode_scoped",
-            "passed": not ceo_active or with_mode == "1",
-            "detail": "CEO protocol should only activate in ORCHESTRATE_MODE",
+            "passed": (ceo_active and session_type == "main") or
+                      (not ceo_active and session_type != "main") or
+                      os.environ.get("ORCHESTRATE_MODE") == "0",
+            "detail": "CEO protocol activates for main sessions, not workers",
         })
 
         # Check 4: routing rules exist in hierarchy
@@ -631,8 +653,8 @@ def verify_migration_step(step_num: int) -> Dict[str, Any]:
     # Step-specific checks
     if step_num == 1:
         # Registry directory and YAML profiles
-        registry_dir = os.path.join(os.path.dirname(__file__), "registry")
-        roles_dir = os.path.join(os.path.dirname(__file__), "roles")
+        registry_dir = os.path.expanduser("~/scripts/orchestrator/registry")
+        roles_dir = os.path.expanduser("~/scripts/orchestrator/roles")
         result["verified"] = (
             check_registry_health(registry_dir)
             and os.path.isdir(roles_dir)
@@ -641,7 +663,7 @@ def verify_migration_step(step_num: int) -> Dict[str, Any]:
 
     elif step_num == 14:
         # Deprecate task-router.py
-        path = os.path.join(os.path.dirname(__file__), "task-router.py")
+        path = os.path.expanduser("~/scripts/orchestrator/task-router.py")
         result["verified"] = check_task_router_deprecated(path)
         result["details"] = "task-router.py has deprecation comment"
 

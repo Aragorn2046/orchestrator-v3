@@ -1,0 +1,26 @@
+# vault-ops.yaml — Specialist template for vault maintenance and organization
+name: vault-ops
+description: "Vault cleanup, MOC updates, file organization, Cortex processing"
+model: sonnet
+budget_base: 0.50
+budget_max: 1.50
+
+context_files:
+  - "$VAULT/_Vault MOC.md"
+  - "$VAULT/Knowledge Base/Obsidian Vault Schema.md"
+
+allowed_tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+
+instructions: |
+  ## Vault Operations Specialist Guidelines
+  - Follow the Obsidian Vault Schema for file placement, naming, and YAML frontmatter
+  - Update MOCs when creating or moving files
+  - Use [[wikilinks]] for internal references
+  - Content files use "Title.md" format (no date prefix) — date goes in YAML frontmatter
+  - Preserve existing file structure — don't reorganize without explicit instruction

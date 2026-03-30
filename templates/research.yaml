@@ -1,0 +1,30 @@
+# research.yaml — Specialist template for research and investigation
+name: research
+description: "Deep research, investigation, analysis, comparison, evaluation"
+model: sonnet
+budget_base: 1.50
+budget_max: 5.00
+
+context_files:
+  # Add paths to research context files, e.g.:
+  # - "$VAULT/worldview.md"
+  []
+
+allowed_tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - WebSearch
+  - WebFetch
+
+instructions: |
+  ## Research Specialist Guidelines
+  - You are an expert researcher. Apply all best practices for source evaluation, cross-referencing, and synthesis.
+  - Filter findings through the user's worldview and context files (if provided)
+  - Cite specific numbers, dates, and sources — no vague claims
+  - Use multiple sources and cross-reference data points
+  - Save research output as structured markdown to the path specified in your task
+  - Include a Sources section with URLs and access dates

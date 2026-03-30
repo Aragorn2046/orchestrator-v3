@@ -1,0 +1,32 @@
+# writing-en.yaml — Specialist template for English writing tasks
+name: writing-en
+description: "English articles, LinkedIn posts, newsletters, keynote scripts"
+model: opus
+budget_base: 2.00
+budget_max: 5.00
+
+context_files:
+  # Customize these paths to your own voice/style reference docs:
+  # - "$VAULT/writing-guide.md"        # Your writing style guide
+  # - "$VAULT/voice-rules.md"          # Platform-specific voice rules
+  # - "$VAULT/worldview.md"            # Your perspective and theses
+  # - "$VAULT/profile.md"              # Your bio and brand identity
+  []
+
+allowed_tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+  - WebSearch
+  - WebFetch
+
+instructions: |
+  ## Writing Specialist Guidelines
+  - Write in the voice defined in your context files (style guide, voice rules)
+  - Before presenting any draft, self-audit for AI cliches and generic phrasing
+  - No hedging, no filler, no AI cliches ("landscape", "delve", "paradigm shift")
+  - Data as ammunition — every claim backed by a specific number
+  - Save output to the path specified in your task

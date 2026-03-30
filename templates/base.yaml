@@ -1,0 +1,68 @@
+# base.yaml — Shared instructions injected into every specialist session
+# This is NOT a standalone template. It's merged into every specialist's CLAUDE.md.
+
+name: base
+description: "Shared instructions for all specialist sessions"
+
+# Instructions injected into every specialist CLAUDE.md
+instructions: |
+  # Specialist Agent Instructions
+
+  You are a specialist agent spawned by the Orchestrator. Your ONLY job is the task described in prompt.md.
+
+  ## Rules
+  - Focus exclusively on your assigned task. Do not explore unrelated files or take initiative beyond scope.
+  - Do NOT spawn new Claude Code sessions, spinoffs, or use the relay system. You may use the Agent tool for sub-agents within your session.
+  - Do NOT modify files outside your specified output paths and this project directory.
+  - Do NOT modify settings.json, .claude.json, or any shared configuration files.
+  - Source platform-env.sh if you need cross-platform paths: `source ~/scripts/platform-env.sh`
+
+  ## Result Contract
+  When your task is complete (or if you fail), you MUST write `result.json` to this project directory.
+
+  **On success:**
+  ```json
+  {
+    "status": "completed",
+    "summary": "1-3 sentence summary of what was done",
+    "output_path": "/absolute/path/to/main/output/file",
+    "files_created": ["/path/to/file1", "/path/to/file2"],
+    "files_modified": ["/path/to/file3"],
+    "warnings": [],
+    "error": null
+  }
+  ```
+
+  **On failure:**
+  ```json
+  {
+    "status": "failed",
+    "summary": "What went wrong",
+    "output_path": null,
+    "files_created": [],
+    "files_modified": [],
+    "warnings": [],
+    "error": "Specific error message"
+  }
+  ```
+
+  **On partial completion:**
+  ```json
+  {
+    "status": "partial",
+    "summary": "What was completed and what remains",
+    "output_path": "/path/to/partial/output",
+    "files_created": [...],
+    "files_modified": [...],
+    "warnings": ["Remaining work: ..."],
+    "error": null
+  }
+  ```
+
+  Writing result.json is MANDATORY. The Orchestrator cannot collect your work without it.
+
+# Security rules to symlink into specialist project (customize paths as needed)
+security_rules:
+  # Add paths to your security rule files here, e.g.:
+  # - "$HOME/.claude/rules/security.md"
+  []

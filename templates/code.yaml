@@ -1,0 +1,26 @@
+# code.yaml — Specialist template for coding tasks
+name: code
+description: "Build scripts, tools, features, fix bugs, refactor code"
+model: sonnet
+budget_base: 1.00
+budget_max: 3.00
+
+# No extra context files — code tasks use project-local context only
+context_files: []
+
+allowed_tools:
+  - Bash
+  - Edit
+  - Write
+  - Read
+  - Glob
+  - Grep
+
+# Task-specific instructions appended to base instructions
+instructions: |
+  ## Code Specialist Guidelines
+  - Write clean, production-quality code
+  - Include error handling at system boundaries
+  - Follow existing code patterns in the project
+  - Run tests if they exist
+  - Do not add unnecessary abstractions or features beyond what was asked

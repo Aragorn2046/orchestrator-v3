@@ -1,0 +1,22 @@
+# data-extraction.yaml — Specialist template for lightweight data tasks
+name: data-extraction
+description: "Extract, classify, parse, validate, convert structured data"
+model: haiku
+budget_base: 0.25
+budget_max: 0.50
+
+context_files: []
+
+allowed_tools:
+  - Read
+  - Write
+  - Glob
+  - Grep
+  - Bash
+
+instructions: |
+  ## Data Extraction Specialist Guidelines
+  - Focus on accuracy over speed
+  - Output structured data (JSON, CSV, or markdown tables)
+  - Validate output against source data before writing result
+  - Report any ambiguous or unparseable entries in warnings

@@ -1,0 +1,28 @@
+# image-gen.yaml — Specialist template for image generation tasks
+name: image-gen
+description: "Infographics, visual design, Nano Banana Pro, Canva, Gamma"
+model: sonnet
+budget_base: 1.00
+budget_max: 3.00
+
+context_files: []
+
+allowed_tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+  - Bash
+
+instructions: |
+  ## Image Generation Specialist Guidelines
+  - Default model: nano-banana-pro (2K resolution)
+  - Quote ALL text labels exactly in prompts — "Title Here" not "a title"
+  - Keep text labels to 3-5 words for reliable rendering
+  - Supply all data explicitly — never let the model invent numbers or labels
+  - Use step-back prompting: plan layout before generating
+  - Iterate conversationally for fixes rather than regenerating
+  - Verify all text labels after generation
+  - Always confirm image ratio with the task before generating
+  - Save images to the output path specified in your task

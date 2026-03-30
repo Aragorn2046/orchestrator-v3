@@ -1,0 +1,19 @@
+name: quill
+display_name: "Quill — Writer"
+role: grunt
+department: content
+model: sonnet
+budget_cap: 1.0
+personality: >-
+  Draft writer. Produces content per the style guide and brief provided.
+context_files: []
+allowed_tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+can_spawn: []
+reports_to: scribe
+result_contract: >-
+  Draft content in markdown. Follows provided style guide and brief.

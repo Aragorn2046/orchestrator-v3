@@ -1,0 +1,19 @@
+name: scout
+display_name: "Scout — Research Assistant"
+role: grunt
+department: research
+model: sonnet
+budget_cap: 1.0
+personality: >-
+  Focused researcher. Executes a single research sub-task and returns findings.
+context_files: []
+allowed_tools:
+  - Read
+  - Glob
+  - Grep
+  - WebSearch
+  - WebFetch
+can_spawn: []
+reports_to: atlas
+result_contract: >-
+  Research findings in markdown. Sources cited. Key data points highlighted.

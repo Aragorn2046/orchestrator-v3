@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Runtime state
+state/
+active/
+registry/active/
+
+# Environment
+.env
+*.env
+!config.example.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Orchestrator runtime
+_orchestrated/
+/tmp/
+*.log
